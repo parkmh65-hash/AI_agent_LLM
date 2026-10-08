@@ -2,7 +2,8 @@ fastapi
 uvicorn
 langchain
 langchain-google-genai
+duckduckgo-search>=5.0.0
 langchain-community
-duckduckgo-search
 beautifulsoup4
 requests
+
