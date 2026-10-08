@@ -84,32 +84,37 @@ def get_search_context(query: str) -> str:
 
 @app.post("/api/chat")
 def chat_with_bot(req: ChatRequest):
-    # LLM 초기화
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)
-    
-    # LCEL 프롬프트 설정 (콜랩 소스 기반)
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "사용자의 질문에 대해 아래 context에 기반하여 답변하라.:\n\n{context}"),
-        MessagesPlaceholder(variable_name="messages"),
-        ("human", "{question}")
-    ])
-    
-    # 체인 구성
-    chain = prompt | llm | StrOutputParser()
-    
-    # 웹 스크래핑을 통한 컨텍스트 수집
-    context = get_search_context(req.message)
-    
-    # 메모리(히스토리) 포맷팅
-    formatted_history = []
-    for h in req.history:
-        formatted_history.append((h["role"], h["content"]))
+    try:
+        # LLM 초기화
+        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)
         
-    # 결과 생성
-    result = chain.invoke({
-        "context": context,
-        "messages": formatted_history,
-        "question": req.message
-    })
-    
-    return {"reply": result}
+        # LCEL 프롬프트 설정
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "사용자의 질문에 대해 아래 context에 기반하여 답변하라.:\n\n{context}"),
+            MessagesPlaceholder(variable_name="messages"),
+            ("human", "{question}")
+        ])
+        
+        # 체인 구성
+        chain = prompt | llm | StrOutputParser()
+        
+        # 웹 스크래핑을 통한 컨텍스트 수집
+        context = get_search_context(req.message)
+        
+        # 메모리(히스토리) 포맷팅
+        formatted_history = []
+        for h in req.history:
+            formatted_history.append((h["role"], h["content"]))
+            
+        # 결과 생성 (에러가 발생하기 가장 쉬운 구간)
+        result = chain.invoke({
+            "context": context,
+            "messages": formatted_history,
+            "question": req.message
+        })
+        
+        return {"reply": result}
+        
+    except Exception as e:
+        # 500 에러 대신 200 상태 코드로 상세 에러 메시지를 프론트로 반환
+        return {"reply": f"⚠️ 서버 처리 중 오류가 발생했습니다: {str(e)}"}
