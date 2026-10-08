@@ -21,7 +21,7 @@ class PoemRequest(BaseModel):
 @app.post("/api/poem")
 def generate_poem(data: PoemRequest):
     # GOOGLE_API_KEY 환경변수 자동 참조
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.7)
     prompt = PromptTemplate.from_template("주제 '{topic}'에 대한 짧고 감동적인 시를 한 편 작성해줘.")
     parser = StrOutputParser()
     
