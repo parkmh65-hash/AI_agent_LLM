@@ -86,7 +86,7 @@ def get_search_context(query: str) -> str:
 def chat_with_bot(req: ChatRequest):
     try:
         # LLM 초기화
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
         
         # LCEL 프롬프트 설정
         prompt = ChatPromptTemplate.from_messages([
