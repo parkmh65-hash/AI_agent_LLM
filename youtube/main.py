@@ -33,9 +33,9 @@ def summarize_youtube(req: SearchQuery):
         # 3. 모델 및 체인 구성 (GOOGLE_API_KEY 환경변수 참조)
         llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "다음 영상에 대한 요약을 한국어로 만들어줘:
+            ("system", """다음 영상에 대한 요약을 한국어로 만들어줘:
 
-{context}")
+{context}""")
         ])
         chain = create_stuff_documents_chain(llm, prompt)
 
