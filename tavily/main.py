@@ -35,7 +35,7 @@ def generate_report(req: ChatRequest):
         context = search_res.get("results", [])
         
         # 2. 제미나이 LLM 초기화 (오타 수정됨)
-        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.2)        
+        llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)        
         # 3. 프롬프트 설정
         prompt = ChatPromptTemplate.from_messages([
             ("system", "당신은 신문기사를 쓰는 기자 AI입니다. 당신은 주어진 정보를 바탕으로 객관적이고 체계적으로 작성된 기사를 써야 합니다."),
