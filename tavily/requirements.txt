@@ -1,9 +1,12 @@
+RUN pip install --no-cache-dir -U -r requirements.txt
 fastapi
 uvicorn
 pydantic
 requests
 beautifulsoup4
-langchain-core
+
 langchain-community
-langchain-google-genai>=1.0.8
+
+langchain-core>=0.3.0
+langchain-google-genai>=2.0.0
 tavily-python>=0.3.3
