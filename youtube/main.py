@@ -45,17 +45,27 @@ def summarize_youtube(req: SearchQuery):
         for v in videos:
             v_url = 'https://youtube.com' + v['url_suffix']
             try:
-                fetched = YouTubeTranscriptApi.get_transcript(v['id'], languages=['ko', 'en'])
+                # 1. 자막 리스트를 먼저 가져옴
+                transcript_list = YouTubeTranscriptApi.list_transcripts(v['id'])
+                
+                # 2. 한국어, 영어, 자동 생성 영어 중 가능한 것을 찾음
+                try:
+                    # 먼저 한국어 또는 표준 영어를 시도
+                    transcript = transcript_list.find_transcript(['ko', 'en'])
+                except NoTranscriptFound:
+                    # 없으면 사용 가능한 아무 자막(주로 자동 생성된 자막)을 영어로 번역해서 시도
+                    transcript = transcript_list.find_generated_transcript(['en', 'ko'])
+                    # transcript = transcript.translate('ko') # 필요하다면 여기서 한국어로 번역 요청 가능
+
+                fetched = transcript.fetch()
                 text = " ".join([s['text'] for s in fetched])
                 
                 docs = [Document(page_content=text)]
                 summary = chain.invoke({"context": docs})
                 
             except (TranscriptsDisabled, NoTranscriptFound):
-                # 자막이 아예 없거나, 요청한 언어(ko, en) 자막이 없는 경우
                 summary = "이 영상은 자막이 제공되지 않아 요약할 수 없습니다."
             except Exception as e:
-                # 그 외의 알 수 없는 오류
                 summary = f"자막 추출 오류: {type(e).__name__}"
             
             results.append({
