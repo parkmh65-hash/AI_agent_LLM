@@ -128,3 +128,10 @@ def handle_chat(req: ChatRequest):
         reply_text = ai_msg.content
 
     return {"reply": reply_text}
+
+import os
+import uvicorn
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)
