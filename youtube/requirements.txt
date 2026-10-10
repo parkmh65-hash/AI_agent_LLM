@@ -1,8 +1,8 @@
-fastapi
-uvicorn
-langchain
-langchain-google-genai
-langchain-community
-youtube-search
-youtube-transcript-api
-pydantic
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+langchain==0.3.x
+langchain-google-genai==2.x.x
+langchain-community==0.3.x
+youtube-search==2.1.2
+youtube-transcript-api==0.6.x
+pydantic==2.x
