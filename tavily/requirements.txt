@@ -7,5 +7,5 @@ beautifulsoup4
 langchain-community
 
 langchain-core>=0.3.0
-langchain-google-genai --upgrade
+langchain-google-genai>=2.0.0
 tavily-python>=0.3.3
