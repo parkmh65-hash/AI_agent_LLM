@@ -6,6 +6,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import os
+import uvicorn  # 필수: 맨 하단 서버 실행을 위한 모듈
 
 app = FastAPI()
 
@@ -17,7 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 프론트엔드(Code.gs)에서 'message'와 'history'를 보내므로 규격을 맞춰줍니다.
 class ChatRequest(BaseModel):
     message: str
     history: list = []
@@ -28,17 +28,18 @@ def generate_report(req: ChatRequest):
         # 1. Tavily 검색 실행
         tavily = TavilyClient()
         search_res = tavily.search(
-            req.message, # 프론트에서 넘어오는 키(message) 사용
+            req.message,
             search_depth="advanced", 
             include_raw_content=True
         )
         context = search_res.get("results", [])
         
-        # 2. 제미나이 LLM 초기화 (오타 수정됨)
-        #llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash-latest", temperature=0.2)        
-        llm = ChatGoogleGenerativeAI(model="gemini-3.8-flash", temperature=0.2
-                                    max_retries=3  # 429 에러 시 최대 3회 자동 재시도
-                                    )
+        # 2. 제미나이 LLM 초기화 (쉼표 누락 및 모델명 오타 수정)
+        llm = ChatGoogleGenerativeAI(
+            model="gemini-1.5-flash", 
+            temperature=0.2,
+            max_retries=3  # 429 에러 시 최대 3회 자동 재시도
+        )
 
         # 3. 프롬프트 설정
         prompt = ChatPromptTemplate.from_messages([
@@ -54,21 +55,16 @@ def generate_report(req: ChatRequest):
             "query": req.message
         })
         
-        # 프론트엔드에서 기다리는 'reply' 키로 반환
         return {"reply": result}
         
-    
-# main.py의 에러 처리 부분 수정
     except Exception as e:
         error_msg = str(e)
-        # 429 할당량 초과 에러인 경우
+        # 429 할당량 초과 에러인 경우 사용자 친화적 메시지 반환
         if "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
             return {"reply": "⏳ 현재 이용자가 많아 AI 생성 한도를 초과했습니다. 약 20초 후에 [작성] 버튼을 다시 눌러주세요."}
         
-        # 기타 에러인 경우
         return {"reply": f"⚠️ 텍스트 생성 중 오류가 발생했습니다: {error_msg}"}
 
-# 파일 맨 아래에 추가
 if __name__ == "__main__":
     # Cloud Run이 제공하는 PORT 환경변수를 가져오되, 없으면 8080 사용
     port = int(os.environ.get("PORT", 8080))
