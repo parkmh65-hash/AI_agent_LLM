@@ -46,8 +46,7 @@ def summarize_youtube(req: SearchQuery):
             v_url = 'https://youtube.com' + v['url_suffix']
             try:
                 # 1. 자막 리스트를 먼저 가져옴
-                transcript_list = YouTubeTranscriptApi.list_transcripts(v['id'])
-                
+                transcript_list = YouTubeTranscriptApi.list_transcripts(v['id'], cookies='cookies.txt')
                 # 2. 자막 탐색 우선순위 변경
                 try:
                     # 명시적인 한/영 자막을 먼저 찾음
