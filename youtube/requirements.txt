@@ -1,8 +1,10 @@
 fastapi==0.115.0
 uvicorn[standard]==0.30.6
-langchain==0.3.x
-langchain-google-genai==2.x.x
-langchain-community==0.3.x
+langchain==0.3.27
+langchain-core==0.3.76
+langchain-community==0.3.29
+langchain-google-genai==2.1.10
 youtube-search==2.1.2
-youtube-transcript-api==0.6.x
-pydantic==2.x
+youtube-transcript-api==0.6.3
+pytube
+pydantic==2.11.7
