@@ -67,3 +67,10 @@ def generate_report(req: ChatRequest):
         
         # 기타 에러인 경우
         return {"reply": f"⚠️ 텍스트 생성 중 오류가 발생했습니다: {error_msg}"}
+
+# 파일 맨 아래에 추가
+if __name__ == "__main__":
+    # Cloud Run이 제공하는 PORT 환경변수를 가져오되, 없으면 8080 사용
+    port = int(os.environ.get("PORT", 8080))
+    # 외부 접속이 가능하도록 host를 "0.0.0.0"으로 설정
+    uvicorn.run(app, host="0.0.0.0", port=port)
