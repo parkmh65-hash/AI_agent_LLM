@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from youtube_search import YoutubeSearch
-from youtube_transcript_api import YouTubeTranscriptApi
 from langchain_core.documents import Document
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains.combine_documents import create_stuff_documents_chain
 import os
 import uvicorn
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 
 app = FastAPI()
 
