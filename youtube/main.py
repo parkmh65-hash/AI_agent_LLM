@@ -64,3 +64,9 @@ def summarize_youtube(req: SearchQuery):
         return {"data": results}
     except Exception as e:
         return {"error": str(e)}
+
+if __name__ == "__main__":
+    # Cloud Run이 제공하는 PORT 환경변수를 가져오되, 없으면 8080 사용
+    port = int(os.environ.get("PORT", 8080))
+    # 외부 접속이 가능하도록 host를 "0.0.0.0"으로 설정
+    uvicorn.run(app, host="0.0.0.0", port=port)
