@@ -34,8 +34,7 @@ def summarize_youtube(req: SearchQuery):
         llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.2)
         prompt = ChatPromptTemplate.from_messages([
             ("system", """다음 영상에 대한 요약을 한국어로 만들어줘:
-
-{context}""")
+            {context}""")
         ])
         chain = create_stuff_documents_chain(llm, prompt)
 
@@ -43,17 +42,20 @@ def summarize_youtube(req: SearchQuery):
         for v in videos:
             v_url = 'https://youtube.com' + v['url_suffix']
             try:
-                # 자막 로드
-                loader = YoutubeLoader.from_youtube_url(v_url, language=['ko', 'en'])
-                docs = loader.load()
+                # 1. 객체 생성() 없이 클래스 메서드 get_transcript 직접 호출
+                fetched = YouTubeTranscriptApi.get_transcript(v['id'], languages=['ko', 'en'])
                 
-                if docs:
-                    summary = chain.invoke({"context": docs})
-                else:
-                    summary = "자막을 제공하지 않는 영상입니다."
+                # 2. 반환값이 딕셔너리 리스트이므로 s['text']로 키에 접근
+                text = " ".join([s['text'] for s in fetched])
+                
+                # 3. LangChain 체인에 전달하기 위해 Document 객체로 매핑
+                docs = [Document(page_content=text)]
+                
+                summary = chain.invoke({"context": docs})
+                
             except Exception as e:
-                summary = f"자막 추출 오류: {str(e)}"
-            
+                summary = f"자막 추출 오류: {type(e).__name__}: {e}"
+                
             results.append({
                 "title": v.get("title"),
                 "url": v_url,
@@ -62,6 +64,7 @@ def summarize_youtube(req: SearchQuery):
             })
 
         return {"data": results}
+
     except Exception as e:
         return {"error": str(e)}
 
