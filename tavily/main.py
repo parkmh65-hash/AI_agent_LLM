@@ -35,7 +35,7 @@ def generate_report(req: SearchQuery):
         return {"report": f"Tavily 검색 중 오류가 발생했습니다: {str(e)}"}
 
     # 2. 제미나이 LLM 초기화 (환경 변수 GOOGLE_API_KEY 자동 참조)
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0.2)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro-lates", temperature=0.2)
     
     # 3. 프롬프트 설정 (콜랩 소스 기반)
     prompt = ChatPromptTemplate.from_messages([
