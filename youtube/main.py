@@ -45,20 +45,18 @@ def summarize_youtube(req: SearchQuery):
         for v in videos:
             v_url = 'https://youtube.com' + v['url_suffix']
             try:
-                # API 직접 호출을 통한 자막 추출
                 fetched = YouTubeTranscriptApi.get_transcript(v['id'], languages=['ko', 'en'])
                 text = " ".join([s['text'] for s in fetched])
                 
-                # LangChain에 전달할 Document 포맷으로 변환
                 docs = [Document(page_content=text)]
+                summary = chain.invoke({"context": docs})
                 
-                if docs:
-                    summary = chain.invoke({"context": docs})
-                else:
-                    summary = "자막을 제공하지 않는 영상입니다."
-                    
+            except (TranscriptsDisabled, NoTranscriptFound):
+                # 자막이 아예 없거나, 요청한 언어(ko, en) 자막이 없는 경우
+                summary = "이 영상은 자막이 제공되지 않아 요약할 수 없습니다."
             except Exception as e:
-                summary = f"자막 추출 오류: {type(e).__name__}: {str(e)}"
+                # 그 외의 알 수 없는 오류
+                summary = f"자막 추출 오류: {type(e).__name__}"
             
             results.append({
                 "title": v.get("title"),
