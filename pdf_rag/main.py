@@ -39,9 +39,9 @@ embeddings = OpenAIEmbeddings(api_key=OPENAI_API_KEY)
 
 # LLM 초기화
 # 질의 확장용 모델 (빠른 처리 목적)
-llm_fast = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=GOOGLE_API_KEY)
+llm_fast = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", google_api_key=GOOGLE_API_KEY)
 # 답변 생성용 모델 (스트리밍 활성화)
-llm_streaming = ChatGoogleGenerativeAI(model="gemini-1.5-pro", google_api_key=GOOGLE_API_KEY, streaming=True)
+llm_streaming = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", google_api_key=GOOGLE_API_KEY, streaming=True)
 
 class ChatRequest(BaseModel):
     query: str
